@@ -83,6 +83,39 @@ public class ContatoDao {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	// Método que retorna um objeto de acordo com o ID passado, do Banco de Dados
+		public Contato getByID(long id) {
+			
+			// Query SQL
+			String sql = "SELECT * FROM contatos WHERE id = (?);";
+			
+			try(PreparedStatement ps = this.connection.prepareStatement(sql);){
+				
+				ps.setLong(1, id);
+				
+				ResultSet rs = ps.executeQuery();
+				rs.next();
+				
+				Contato contato = new Contato();
+				
+				contato.setId(rs.getLong(1));
+				contato.setNome(rs.getString(2));
+				contato.setEmail(rs.getString(3));
+				contato.setEndereco(rs.getString(4));
+				
+				Calendar data = Calendar.getInstance();
+				data.setTime(rs.getDate("dataNascimento"));
+				contato.setDataNascimento(data);
+				
+				rs.close();
+				
+				return contato;
+				
+			} catch (SQLException e) {
+				throw new RuntimeException(e);
+			}
+		}
 
 	public void atualiza(Contato contato) {
 		String sql = "update contatos set nome = ?, email = ?, endereco = ?, dataNascimento = ? where id = ?";
